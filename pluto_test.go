@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/music13245678/pluto"
+	"github.com/canhlinh/pluto"
 )
 
 func setupHTTPServer() *http.Server {
