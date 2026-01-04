@@ -24,11 +24,19 @@ type worker struct {
 // copyAt reads 64 kilobytes from source and copies them to destination at a given offset
 func (w *worker) copyAt(src io.Reader, dlcounter *uint64) (uint64, error) {
 	bufBytes := make([]byte, 256*1024)
-
 	var bytesWritten uint64
 	var err error
 
 	for {
+		// --- THÊM ĐOẠN NÀY VÀO ---
+		select {
+		case <-w.ctx.Done():
+			return bytesWritten, w.ctx.Err() // Thoát ngay lập tức nếu bị Cancel
+		default:
+			// Tiếp tục làm việc bên dưới nếu chưa bị Cancel
+		}
+		// -------------------------
+
 		nsr, serr := src.Read(bufBytes)
 		if nsr > 0 {
 			ndw, derr := w.writer.WriteAt(bufBytes[:nsr], int64(w.begin))
@@ -43,7 +51,6 @@ func (w *worker) copyAt(src io.Reader, dlcounter *uint64) (uint64, error) {
 				break
 			}
 			if nsr != ndw {
-				fmt.Printf("Short write error. Read: %d, Wrote: %d", nsr, ndw)
 				err = io.ErrShortWrite
 				break
 			}
@@ -56,7 +63,6 @@ func (w *worker) copyAt(src io.Reader, dlcounter *uint64) (uint64, error) {
 			break
 		}
 	}
-
 	return bytesWritten, err
 }
 
