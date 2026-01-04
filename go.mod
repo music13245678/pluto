@@ -1,3 +1,3 @@
-module github.com/music13245678/pluto
+module github.com/canhlinh/pluto
 
 go 1.13
