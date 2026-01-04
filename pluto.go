@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
-	"mime"
 	"net"
 	"net/http"
 	"net/url"
